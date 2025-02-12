@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Insurance Charges Prediction</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .form-container {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      width: 300px;
+    }
+    input[type="number"] {
+      width: 100%;
+      padding: 8px;
+      margin: 5px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    input[type="submit"] {
+      width: 100%;
+      padding: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    input[type="submit"]:hover {
+      background-color: #45a049;
+    }
+    .result {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Insurance Charges Prediction</h2>
+    <form id="predictionForm">
+      Age: <input type="number" id="age" name="age" required><br>
+      BMI: <input type="number" id="bmi" name="bmi" required><br>
+      Children: <input type="number" id="children" name="children" required><br>
+      Sex (0 for Male, 1 for Female): <input type="number" id="sex" name="sex" required><br>
+      Smoker (0 for No, 1 for Yes): <input type="number" id="smoker" name="smoker" required><br>
+      Region (0-3): <input type="number" id="region" name="region" required><br>
+      <input type="submit" value="Predict">
+    </form>
+    <div class="result">
+      <h3>Prediction Result:</h3>
+      <p id="predictionResult">$0.00</p>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("predictionForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const data = {
+        age: parseFloat(document.getElementById("age").value),
+        bmi: parseFloat(document.getElementById("bmi").value),
+        children: parseInt(document.getElementById("children").value),
+        sex: parseInt(document.getElementById("sex").value),
+        smoker: parseInt(document.getElementById("smoker").value),
+        region: parseInt(document.getElementById("region").value)
+      };
+
+      try {
+        const response = await fetch("http://localhost:5000/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify([data])
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          document.getElementById("predictionResult").innerText = `$${result.predicted_charges[0].toFixed(2)}`;
+        } else {
+          document.getElementById("predictionResult").innerText = `Error: ${result.error}`;
+        }
+      } catch (error) {
+        document.getElementById("predictionResult").innerText = `Error: ${error.message}`;
+      }
+    });
+  </script>
+</body>
+</html>
+
+S
